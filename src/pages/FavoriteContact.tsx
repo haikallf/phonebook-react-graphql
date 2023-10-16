@@ -6,7 +6,7 @@ import { ContactList } from "../interfaces/ContactList";
 import { DELETE_CONTACT } from "../graphql/queries/delete/deleteContact";
 // ... (your imports)
 
-function Home() {
+function FavoriteContact() {
   const [currentPage, setCurrentPage] = useState(1);
   const [ids, setIds] = useState<number[]>([]);
   const [getContactList, { loading, data, error }] = useLazyQuery(
@@ -41,10 +41,13 @@ function Home() {
     });
   };
 
-  const addToFavorite = (id: number) => {
+  const removeFromFavorite = (id: number) => {
     setIds((prev) => {
-      localStorage.setItem("favoriteId", JSON.stringify([...prev, id]));
-      return [...prev, id];
+      var filteredArray = ids.filter(function (e) {
+        return e !== id;
+      });
+      localStorage.setItem("favoriteId", JSON.stringify(filteredArray));
+      return filteredArray;
     });
   };
 
@@ -78,8 +81,8 @@ function Home() {
   if (deleteError) return <h1>Error loading contacts</h1>;
 
   console.log(data);
-  const filteredData = data.contact.filter(
-    (el: ContactList) => !ids.includes(el.id)
+  const filteredData = data.contact.filter((el: ContactList) =>
+    ids.includes(el.id)
   );
   const hasMoreData = filteredData?.length === 10;
 
@@ -92,9 +95,9 @@ function Home() {
             first_name={el.first_name}
             last_name={el.last_name}
             phones={el.phones}
-            isFavorite={false}
+            isFavorite={true}
             onDelete={() => deleteContactById(el.id)}
-            favoriteAction={() => addToFavorite(el.id)}
+            favoriteAction={() => removeFromFavorite(el.id)}
           />
         </React.Fragment>
       ))}
@@ -111,4 +114,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default FavoriteContact;
