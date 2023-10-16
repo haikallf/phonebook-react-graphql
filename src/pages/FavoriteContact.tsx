@@ -4,7 +4,55 @@ import { GET_CONTACT_LIST } from "../graphql/queries/list/getContactList";
 import ContactCard from "../components/ContactCard";
 import { ContactList } from "../interfaces/ContactList";
 import { DELETE_CONTACT } from "../graphql/queries/delete/deleteContact";
+import styled from "@emotion/styled";
+import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
 
+const Container = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 10px;
+`;
+
+const ContactListContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding-top: 16px;
+  gap: 12px;
+
+  @media only screen and (min-width: 767px) {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  @media only screen and (min-width: 481px) and (max-width: 767px) {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+`;
+
+const PaginationController = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 16px;
+  width: 120px;
+`;
+
+const PaginationButton = styled.button`
+  height: 24px;
+  width: 24px;
+  background: white;
+  color: black;
+  border: 1px solid black;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
 function FavoriteContact() {
   const [currentPage, setCurrentPage] = useState(1);
   const [ids, setIds] = useState<number[]>([]);
@@ -86,27 +134,28 @@ function FavoriteContact() {
   const hasMoreData = filteredData?.length === 10;
 
   return (
-    <div>
-      {filteredData.map((el: ContactList, idx: number) => (
-        <React.Fragment key={idx}>
+    <Container>
+      <ContactListContainer>
+        {filteredData.map((el: ContactList, idx: number) => (
           <ContactCard
+            key={idx}
             contact={el}
-            isFavorite={true}
+            isFavorite={false}
             onDelete={() => deleteContactById(el.id)}
             favoriteAction={() => removeFromFavorite(el.id)}
           />
-        </React.Fragment>
-      ))}
-      <div>
-        <button onClick={handleLoadLess} disabled={currentPage === 1}>
-          Previous
-        </button>
-        <span>Page {currentPage}</span>
-        <button onClick={handleLoadMore} disabled={!hasMoreData}>
-          Next
-        </button>
-      </div>
-    </div>
+        ))}
+      </ContactListContainer>
+      <PaginationController>
+        <PaginationButton onClick={handleLoadLess} disabled={currentPage === 1}>
+          <BsChevronLeft />
+        </PaginationButton>
+        <span>{currentPage}</span>
+        <PaginationButton onClick={handleLoadMore} disabled={!hasMoreData}>
+          <BsChevronRight />
+        </PaginationButton>
+      </PaginationController>
+    </Container>
   );
 }
 
