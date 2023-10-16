@@ -7,7 +7,6 @@ const NavbarContainer = styled.div`
   height: 50px;
   background-color: #000000;
   display: flex;
-  font-family: "Courier New", Courier, monospace;
   font-size: 20px;
   color: white;
 `;
