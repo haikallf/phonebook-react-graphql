@@ -90,10 +90,7 @@ function FavoriteContact() {
       {filteredData.map((el: ContactList, idx: number) => (
         <React.Fragment key={idx}>
           <ContactCard
-            id={el.id}
-            first_name={el.first_name}
-            last_name={el.last_name}
-            phones={el.phones}
+            contact={el}
             isFavorite={true}
             onDelete={() => deleteContactById(el.id)}
             favoriteAction={() => removeFromFavorite(el.id)}

@@ -106,10 +106,7 @@ function Home() {
         {filteredData.map((el: ContactList, idx: number) => (
           <ContactCard
             key={idx}
-            id={el.id}
-            first_name={el.first_name}
-            last_name={el.last_name}
-            phones={el.phones}
+            contact={el}
             isFavorite={false}
             onDelete={() => deleteContactById(el.id)}
             favoriteAction={() => addToFavorite(el.id)}

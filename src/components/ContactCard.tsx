@@ -2,12 +2,11 @@ import styled from "@emotion/styled";
 import React, { useEffect, useState } from "react";
 import { DELETE_CONTACT } from "../graphql/queries/delete/deleteContact";
 import { useMutation } from "@apollo/client";
+import { ContactList } from "../interfaces/ContactList";
+import { useHistory } from "react-router-dom";
 
 interface ContactCardProps {
-  id: number;
-  first_name: string;
-  last_name: string;
-  phones: Phone[];
+  contact: ContactList;
   isFavorite: boolean;
   onDelete: (id: number) => void;
   favoriteAction: (id: number) => void;
@@ -38,22 +37,20 @@ const Bold = styled.span`
 const ListItem = styled.li``;
 
 const ContactCard: React.FC<ContactCardProps> = ({
-  id,
-  first_name,
-  last_name,
-  phones,
+  contact,
   isFavorite = false,
   onDelete,
   favoriteAction,
 }) => {
+  const history = useHistory();
   return (
     <Container>
       <Label>
         <Bold>First Name: </Bold>
-        {first_name}
+        {contact.first_name}
       </Label>
       <Label>
-        <Bold>Last Name: </Bold> {last_name}
+        <Bold>Last Name: </Bold> {contact.last_name}
       </Label>
 
       <Label>
@@ -61,23 +58,37 @@ const ContactCard: React.FC<ContactCardProps> = ({
       </Label>
 
       <ol>
-        {phones.map((phone, idx) => {
+        {contact.phones.map((phone, idx) => {
           return <li key={idx}>{phone.number}</li>;
         })}
       </ol>
 
       <button
         style={{ position: "absolute", top: 10, right: 20, zIndex: 2 }}
-        onClick={() => onDelete(id)}
+        onClick={() => onDelete(contact.id)}
       >
         x
       </button>
 
       <button
         style={{ position: "absolute", top: 35, right: 20, zIndex: 2 }}
-        onClick={() => favoriteAction(id)}
+        onClick={() => favoriteAction(contact.id)}
       >
         {isFavorite ? "</3" : "<3"}
+      </button>
+
+      <button
+        style={{ position: "absolute", top: 55, right: 20, zIndex: 2 }}
+        onClick={() =>
+          history.push({
+            pathname: "/edit",
+            state: {
+              data: contact,
+            },
+          })
+        }
+      >
+        edit
       </button>
     </Container>
   );

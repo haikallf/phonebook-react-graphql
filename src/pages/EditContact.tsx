@@ -3,6 +3,9 @@ import styled from "@emotion/styled";
 import React, { useState } from "react";
 import { ADD_CONTACT } from "../graphql/queries/create/addContact";
 import { Phone } from "../interfaces/Phone";
+import { ContactList } from "../interfaces/ContactList";
+import { useHistory } from "react-router-dom";
+import { EDIT_CONTACT } from "../graphql/queries/edit/editContact";
 
 const Form = styled.div`
   display: flex;
@@ -10,21 +13,30 @@ const Form = styled.div`
   padding: 10px;
 `;
 
-const AddNewContact: React.FC = () => {
-  const [first_name, setFirstName] = useState("");
-  const [last_name, setLastName] = useState("");
+interface LocationState {
+  data?: ContactList; // You may need to adjust this based on your actual structure
+}
+
+const EditContact: React.FC = () => {
+  const history = useHistory();
+  const { data: selectedContact }: LocationState = history.location.state || {};
+  const [first_name, setFirstName] = useState(selectedContact?.first_name);
+  const [last_name, setLastName] = useState(selectedContact?.last_name);
   const [phone, setPhone] = useState("");
-  const [phones, setPhones] = useState<Phone[]>([]);
+  const [phones, setPhones] = useState<Phone[]>(selectedContact?.phones ?? []);
 
-  const [addContact, { loading, error }] = useMutation(ADD_CONTACT);
+  console.log(selectedContact);
 
-  const addToContact = () => {
-    // setPhones([...phones, { number: phone }]);
-    addContact({
+  const [editContact, { loading, error }] = useMutation(EDIT_CONTACT);
+
+  const editSelectedContact = () => {
+    editContact({
       variables: {
-        first_name,
-        last_name,
-        phones,
+        id: selectedContact?.id,
+        _set: {
+          first_name,
+          last_name,
+        },
       },
     });
   };
@@ -41,7 +53,7 @@ const AddNewContact: React.FC = () => {
 
   return (
     <div>
-      <h1>Add New Contact</h1>
+      <h1>Edit Contact Name</h1>
 
       <Form>
         <p>First Name:</p>
@@ -111,10 +123,10 @@ const AddNewContact: React.FC = () => {
           })}
         </ol>
 
-        <button onClick={addToContact}>Submit</button>
+        <button onClick={editSelectedContact}>Submit</button>
       </Form>
     </div>
   );
 };
 
-export default AddNewContact;
+export default EditContact;
