@@ -25,6 +25,10 @@ const A = styled.a`
   color: white;
 `;
 
+const NavItem = styled.p`
+  margin: 0 10px;
+`;
+
 const Navbar = () => {
   const history = useHistory();
 
@@ -32,36 +36,37 @@ const Navbar = () => {
     <NavbarContainer>
       <DIV>
         <A href="">
-          <p
+          <NavItem
             onClick={() => history.push("/")}
             style={{
               marginRight: "10px",
             }}
           >
             Contacts
-          </p>
+          </NavItem>
         </A>
         <p>|</p>
         <A href="">
-          <p
+          <NavItem
             style={{
               marginLeft: "10px",
+              marginRight: "10px",
             }}
             onClick={() => history.push("/favorite")}
           >
             Favorite
-          </p>
+          </NavItem>
         </A>
         <p>|</p>
         <A href="">
-          <p
+          <NavItem
             style={{
               marginLeft: "10px",
             }}
             onClick={() => history.push("/contact")}
           >
             Add New
-          </p>
+          </NavItem>
         </A>
       </DIV>
     </NavbarContainer>

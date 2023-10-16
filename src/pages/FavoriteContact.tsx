@@ -6,6 +6,8 @@ import { ContactList } from "../interfaces/ContactList";
 import { DELETE_CONTACT } from "../graphql/queries/delete/deleteContact";
 import styled from "@emotion/styled";
 import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
+import Spinner from "../components/Spinner";
+import Swal from "sweetalert2";
 
 const Container = styled.div`
   display: flex;
@@ -63,6 +65,14 @@ function FavoriteContact() {
         limit: 10,
         offset: (currentPage - 1) * 10,
       },
+      onError: (error) => {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Cannot get contact!",
+          footer: "",
+        });
+      },
     }
   );
 
@@ -78,6 +88,14 @@ function FavoriteContact() {
         },
       ],
       awaitRefetchQueries: true,
+      onError: (error) => {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Cannot delete contact!",
+          footer: "",
+        });
+      },
     });
 
   const deleteContactById = (id: number) => {
@@ -121,17 +139,17 @@ function FavoriteContact() {
     }
   };
 
-  if (loading || !data) return <h1>Loading...</h1>;
+  if (loading || !data) return <Spinner text="Loading..." />;
   if (error) return <h1>Error loading contacts</h1>;
 
-  if (deleteLoading) return <h1>Loading...</h1>;
+  if (deleteLoading) return <Spinner text="Deleting..." />;
   if (deleteError) return <h1>Error loading contacts</h1>;
 
   console.log(data);
   const filteredData = data.contact.filter((el: ContactList) =>
     ids.includes(el.id)
   );
-  const hasMoreData = filteredData?.length === 10;
+  const hasMoreData = filteredData.length <= 10 && filteredData.length > 0;
 
   return (
     <Container>

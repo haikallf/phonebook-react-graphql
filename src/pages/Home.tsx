@@ -8,6 +8,7 @@ import { DELETE_CONTACT } from "../graphql/queries/delete/deleteContact";
 import styled from "@emotion/styled";
 import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
 import Spinner from "../components/Spinner";
+import Swal from "sweetalert2";
 
 const Container = styled.div`
   display: flex;
@@ -63,6 +64,7 @@ const PaginationButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
 `;
 
 function Home() {
@@ -91,6 +93,14 @@ function Home() {
         limit: 10,
         offset: (currentPage - 1) * 10,
       },
+      onError: (error) => {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Cannot load contact!",
+          footer: "",
+        });
+      },
     }
   );
 
@@ -106,6 +116,14 @@ function Home() {
         },
       ],
       awaitRefetchQueries: true,
+      onError: (error) => {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Cannot delete contact!",
+          footer: "",
+        });
+      },
     });
 
   const deleteContactById = (id: number) => {
@@ -148,13 +166,15 @@ function Home() {
     if (loading || !data) return <Spinner text="Loading..." />;
     if (error) return <h1>Error loading contacts</h1>;
 
-    if (deleteLoading) return <h1>Loading...</h1>;
+    if (deleteLoading) return <Spinner text="Deleting..." />;
     if (deleteError) return <h1>Error loading contacts</h1>;
 
     const filteredData = data.contact.filter(
       (el: ContactList) => !ids.includes(el.id)
     );
-    const hasMoreData = filteredData?.length === 10;
+
+    const hasMoreData = filteredData.length <= 10 && filteredData.length > 0;
+
     return (
       <React.Fragment>
         <ContactListContainer>
