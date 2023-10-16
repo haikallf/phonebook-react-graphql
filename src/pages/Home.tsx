@@ -5,6 +5,65 @@ import { GET_CONTACT_LIST } from "../graphql/queries/list/getContactList";
 import ContactCard from "../components/ContactCard";
 import { ContactList } from "../interfaces/ContactList";
 import { DELETE_CONTACT } from "../graphql/queries/delete/deleteContact";
+import styled from "@emotion/styled";
+import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
+import Spinner from "../components/Spinner";
+
+const Container = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 10px;
+`;
+
+const SearchField = styled.input`
+  width: 90vw;
+  margin: 0 auto;
+  display: table;
+  border: 1px solid black;
+  border-radius: 12px;
+  padding: 16px;
+`;
+
+const ContactListContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding-top: 16px;
+  gap: 12px;
+
+  @media only screen and (min-width: 767px) {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  @media only screen and (min-width: 481px) and (max-width: 767px) {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+`;
+
+const PaginationController = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 16px;
+  width: 120px;
+`;
+
+const PaginationButton = styled.button`
+  height: 24px;
+  width: 24px;
+  background: white;
+  color: black;
+  border: 1px solid black;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
 
 function Home() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -91,7 +150,7 @@ function Home() {
   };
 
   const showData = () => {
-    if (loading || !data) return <h1>Loading...</h1>;
+    if (loading || !data) return <Spinner text="Loading..." />;
     if (error) return <h1>Error loading contacts</h1>;
 
     if (deleteLoading) return <h1>Loading...</h1>;
@@ -102,35 +161,40 @@ function Home() {
     );
     const hasMoreData = filteredData?.length === 10;
     return (
-      <div>
-        {filteredData.map((el: ContactList, idx: number) => (
-          <ContactCard
-            key={idx}
-            contact={el}
-            isFavorite={false}
-            onDelete={() => deleteContactById(el.id)}
-            favoriteAction={() => addToFavorite(el.id)}
-          />
-        ))}
-        <div>
-          <button onClick={handleLoadLess} disabled={currentPage === 1}>
-            Previous
-          </button>
-          <span>Page {currentPage}</span>
-          <button onClick={handleLoadMore} disabled={!hasMoreData}>
-            Next
-          </button>
-        </div>
-      </div>
+      <React.Fragment>
+        <ContactListContainer>
+          {filteredData.map((el: ContactList, idx: number) => (
+            <ContactCard
+              key={idx}
+              contact={el}
+              isFavorite={false}
+              onDelete={() => deleteContactById(el.id)}
+              favoriteAction={() => addToFavorite(el.id)}
+            />
+          ))}
+        </ContactListContainer>
+        <PaginationController>
+          <PaginationButton
+            onClick={handleLoadLess}
+            disabled={currentPage === 1}
+          >
+            <BsChevronLeft />
+          </PaginationButton>
+          <span>{currentPage}</span>
+          <PaginationButton onClick={handleLoadMore} disabled={!hasMoreData}>
+            <BsChevronRight />
+          </PaginationButton>
+        </PaginationController>
+      </React.Fragment>
     );
   };
 
   return (
-    <div>
-      <input
+    <Container>
+      <SearchField
         type="text"
-        name=""
-        id=""
+        name="search"
+        placeholder="Search contacts..."
         value={search}
         onChange={(e) => {
           debounced(e.target.value);
@@ -138,7 +202,7 @@ function Home() {
         }}
       />
       {showData()}
-    </div>
+    </Container>
   );
 }
 

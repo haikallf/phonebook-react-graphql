@@ -1,9 +1,13 @@
 import styled from "@emotion/styled";
-import React, { useEffect, useState } from "react";
-import { DELETE_CONTACT } from "../graphql/queries/delete/deleteContact";
-import { useMutation } from "@apollo/client";
+import React from "react";
 import { ContactList } from "../interfaces/ContactList";
 import { useHistory } from "react-router-dom";
+import {
+  AiOutlineClose,
+  AiOutlineStar,
+  AiFillStar,
+  AiOutlineEdit,
+} from "react-icons/ai";
 
 interface ContactCardProps {
   contact: ContactList;
@@ -22,16 +26,39 @@ const Container = styled.div`
   flex-direction: column;
   align-items: start;
   justify-content: start;
-  width: 100%;
-  padding: 8px;
-  border-radius: 8;
+  width: 85vw;
+  padding: 16px;
+  border-radius: 12px;
   border-color: black;
   border: 1px solid;
+  border-radius: 12px;
+  box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.75);
+
+  @media only screen and (min-width: 767px) {
+    width: 42vw;
+  }
+
+  @media only screen and (min-width: 601px) and (max-width: 767px) {
+    width: 250px;
+  }
+
+  @media only screen and (min-width: 481px) and (max-width: 600px) {
+    width: 85vw;
+  }
+`;
+
+const ActionButtonContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: absolute;
+  top: 16px;
+  right: 16px;
 `;
 
 const Label = styled.p``;
 const Bold = styled.span`
-  font-weight: 800;
+  font-weight: 700;
 `;
 
 const ListItem = styled.li``;
@@ -53,9 +80,7 @@ const ContactCard: React.FC<ContactCardProps> = ({
         <Bold>Last Name: </Bold> {contact.last_name}
       </Label>
 
-      <Label>
-        <Bold>Phones</Bold>
-      </Label>
+      <Bold>Phones</Bold>
 
       <ol>
         {contact.phones.map((phone, idx) => {
@@ -63,33 +88,26 @@ const ContactCard: React.FC<ContactCardProps> = ({
         })}
       </ol>
 
-      <button
-        style={{ position: "absolute", top: 10, right: 20, zIndex: 2 }}
-        onClick={() => onDelete(contact.id)}
-      >
-        x
-      </button>
+      <ActionButtonContainer>
+        <AiOutlineClose onClick={() => onDelete(contact.id)} />
 
-      <button
-        style={{ position: "absolute", top: 35, right: 20, zIndex: 2 }}
-        onClick={() => favoriteAction(contact.id)}
-      >
-        {isFavorite ? "</3" : "<3"}
-      </button>
+        {isFavorite ? (
+          <AiFillStar onClick={() => favoriteAction(contact.id)} />
+        ) : (
+          <AiOutlineStar onClick={() => favoriteAction(contact.id)} />
+        )}
 
-      <button
-        style={{ position: "absolute", top: 55, right: 20, zIndex: 2 }}
-        onClick={() =>
-          history.push({
-            pathname: "/edit",
-            state: {
-              data: contact,
-            },
-          })
-        }
-      >
-        edit
-      </button>
+        <AiOutlineEdit
+          onClick={() =>
+            history.push({
+              pathname: "/edit",
+              state: {
+                data: contact,
+              },
+            })
+          }
+        />
+      </ActionButtonContainer>
     </Container>
   );
 };
