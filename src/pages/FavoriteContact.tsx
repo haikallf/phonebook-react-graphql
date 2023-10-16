@@ -4,7 +4,6 @@ import { GET_CONTACT_LIST } from "../graphql/queries/list/getContactList";
 import ContactCard from "../components/ContactCard";
 import { ContactList } from "../interfaces/ContactList";
 import { DELETE_CONTACT } from "../graphql/queries/delete/deleteContact";
-// ... (your imports)
 
 function FavoriteContact() {
   const [currentPage, setCurrentPage] = useState(1);

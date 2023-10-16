@@ -18,7 +18,7 @@ const DIV = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
 `;
 
 const A = styled.a`
@@ -32,34 +32,38 @@ const Navbar = () => {
   return (
     <NavbarContainer>
       <DIV>
-        <p>Haikal's Contact</p>
-        <div
-          style={{
-            display: "flex",
-          }}
-        >
-          <A href="">
-            <p
-              onClick={() => history.push("/")}
-              style={{
-                marginRight: "10px",
-              }}
-            >
-              Home
-            </p>
-          </A>
-          <p>|</p>
-          <A href="">
-            <p
-              style={{
-                marginLeft: "10px",
-              }}
-              onClick={() => history.push("/favorite")}
-            >
-              Favorite
-            </p>
-          </A>
-        </div>
+        <A href="">
+          <p
+            onClick={() => history.push("/")}
+            style={{
+              marginRight: "10px",
+            }}
+          >
+            Contacts
+          </p>
+        </A>
+        <p>|</p>
+        <A href="">
+          <p
+            style={{
+              marginLeft: "10px",
+            }}
+            onClick={() => history.push("/favorite")}
+          >
+            Favorite
+          </p>
+        </A>
+        <p>|</p>
+        <A href="">
+          <p
+            style={{
+              marginLeft: "10px",
+            }}
+            onClick={() => history.push("/contact")}
+          >
+            Add New
+          </p>
+        </A>
       </DIV>
     </NavbarContainer>
   );
