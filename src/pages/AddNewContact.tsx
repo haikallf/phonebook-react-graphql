@@ -3,11 +3,78 @@ import styled from "@emotion/styled";
 import React, { useState } from "react";
 import { ADD_CONTACT } from "../graphql/queries/create/addContact";
 import { Phone } from "../interfaces/Phone";
+import { AiOutlinePlus } from "react-icons/ai";
+
+const Heading = styled.h1`
+  font-size: 24px;
+  margin-left: 16px;
+  padding-top: 10px;
+`;
 
 const Form = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   padding: 10px;
+`;
+
+const TextField = styled.input`
+  width: 60vw;
+  border: 1px solid black;
+  border-radius: 12px;
+  padding: 16px;
+`;
+
+const PlusButton = styled.button`
+  height: 32px;
+  width: 32px;
+  background: white;
+  color: black;
+  border: 1px solid black;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const TrashButton = styled.button`
+  height: 32px;
+  width: 32px;
+  background: white;
+  color: black;
+  border: 1px solid black;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const SubmitButton = styled.button`
+  height: 48px;
+  width: 112px;
+  background: black;
+  color: white;
+  border: 1px solid black;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 16px;
+`;
+
+const PhoneList = styled.ul`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 10px;
+  gap: 10px;
+`;
+
+const PhoneListCard = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  gap: 10px;
 `;
 
 const AddNewContact: React.FC = () => {
@@ -19,7 +86,6 @@ const AddNewContact: React.FC = () => {
   const [addContact, { loading, error }] = useMutation(ADD_CONTACT);
 
   const addToContact = () => {
-    // setPhones([...phones, { number: phone }]);
     addContact({
       variables: {
         first_name,
@@ -40,12 +106,12 @@ const AddNewContact: React.FC = () => {
   };
 
   return (
-    <div>
-      <h1>Add New Contact</h1>
+    <React.Fragment>
+      <Heading>Add New Contact</Heading>
 
       <Form>
         <p>First Name:</p>
-        <input
+        <TextField
           type="text"
           name="first_name"
           id="first_name"
@@ -57,7 +123,7 @@ const AddNewContact: React.FC = () => {
         />
 
         <p>Last Name:</p>
-        <input
+        <TextField
           type="text"
           name="last_name"
           id="last_name"
@@ -69,8 +135,8 @@ const AddNewContact: React.FC = () => {
         />
 
         <p>Phone Number</p>
-        <div className="" style={{ display: "flex" }}>
-          <input
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <TextField
             type="text"
             name="phone"
             id="phone"
@@ -80,24 +146,25 @@ const AddNewContact: React.FC = () => {
               setPhone(newValue);
             }}
           />
-          <button
+          <PlusButton
             onClick={() => {
-              if (!isPhoneNumberExists()) {
+              if (!isPhoneNumberExists() && phone !== "") {
                 setPhones([...phones, { number: phone }]);
                 setPhone("");
               }
             }}
           >
-            +
-          </button>
+            <AiOutlinePlus />
+          </PlusButton>
         </div>
 
-        <ol>
+        <p>Phone Number List:</p>
+        <PhoneList>
           {phones.map((elmt, idx) => {
             return (
-              <div key={idx} style={{ display: "flex" }}>
+              <PhoneListCard key={idx} style={{ display: "flex" }}>
                 <li>{elmt.number}</li>
-                <button
+                <TrashButton
                   onClick={() => {
                     let temp = [...phones];
                     temp.splice(idx, 1);
@@ -105,15 +172,15 @@ const AddNewContact: React.FC = () => {
                   }}
                 >
                   x
-                </button>
-              </div>
+                </TrashButton>
+              </PhoneListCard>
             );
           })}
-        </ol>
+        </PhoneList>
 
-        <button onClick={addToContact}>Submit</button>
+        <SubmitButton onClick={addToContact}>Add Contact</SubmitButton>
       </Form>
-    </div>
+    </React.Fragment>
   );
 };
 
