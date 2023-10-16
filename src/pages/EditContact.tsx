@@ -1,20 +1,87 @@
 import { useMutation } from "@apollo/client";
 import styled from "@emotion/styled";
 import React, { useState } from "react";
-import { ADD_CONTACT } from "../graphql/queries/create/addContact";
 import { Phone } from "../interfaces/Phone";
 import { ContactList } from "../interfaces/ContactList";
 import { useHistory } from "react-router-dom";
 import { EDIT_CONTACT } from "../graphql/queries/edit/editContact";
+import { AiOutlinePlus } from "react-icons/ai";
+import { BsTrashFill } from "react-icons/bs";
+import Swal from "sweetalert2";
+
+const Heading = styled.h1`
+  font-size: 24px;
+  margin-left: 16px;
+  padding-top: 10px;
+`;
 
 const Form = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   padding: 10px;
 `;
 
+const TextField = styled.input`
+  width: 60vw;
+  border: 1px solid black;
+  border-radius: 12px;
+  padding: 16px;
+`;
+
+const PlusButton = styled.button`
+  height: 32px;
+  width: 32px;
+  background: white;
+  color: black;
+  border: 1px solid black;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const TrashButton = styled.button`
+  height: 32px;
+  width: 32px;
+  background: white;
+  color: red;
+  border: 1px solid red;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const SubmitButton = styled.button`
+  height: 48px;
+  width: 112px;
+  background: black;
+  color: white;
+  border: 1px solid black;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 16px;
+`;
+
+const PhoneList = styled.ul`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 10px;
+  gap: 10px;
+`;
+
+const PhoneListCard = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  gap: 10px;
+`;
 interface LocationState {
-  data?: ContactList; // You may need to adjust this based on your actual structure
+  data?: ContactList;
 }
 
 const EditContact: React.FC = () => {
@@ -27,7 +94,26 @@ const EditContact: React.FC = () => {
 
   console.log(selectedContact);
 
-  const [editContact, { loading, error }] = useMutation(EDIT_CONTACT);
+  const [editContact, { loading, error }] = useMutation(EDIT_CONTACT, {
+    onError: (error) => {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Editing contact failed!",
+        footer: "",
+      });
+      history.replace("/");
+    },
+    onCompleted: (status) => {
+      Swal.fire({
+        icon: "success",
+        title: "Yay!",
+        text: "A contact has been edited!",
+        footer: "",
+      });
+      history.replace("/");
+    },
+  });
 
   const editSelectedContact = () => {
     editContact({
@@ -42,10 +128,6 @@ const EditContact: React.FC = () => {
   };
 
   if (loading) return <h1>Loading...</h1>;
-  if (error) {
-    console.log(error);
-    return <h1>Error loading contacts</h1>;
-  }
 
   const isPhoneNumberExists = () => {
     return phones.some((el) => el.number === phone);
@@ -53,11 +135,11 @@ const EditContact: React.FC = () => {
 
   return (
     <div>
-      <h1>Edit Contact Name</h1>
+      <Heading>Edit Contact Name</Heading>
 
       <Form>
         <p>First Name:</p>
-        <input
+        <TextField
           type="text"
           name="first_name"
           id="first_name"
@@ -69,7 +151,7 @@ const EditContact: React.FC = () => {
         />
 
         <p>Last Name:</p>
-        <input
+        <TextField
           type="text"
           name="last_name"
           id="last_name"
@@ -81,8 +163,8 @@ const EditContact: React.FC = () => {
         />
 
         <p>Phone Number</p>
-        <div className="" style={{ display: "flex" }}>
-          <input
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <TextField
             type="text"
             name="phone"
             id="phone"
@@ -92,38 +174,38 @@ const EditContact: React.FC = () => {
               setPhone(newValue);
             }}
           />
-          <button
+          <PlusButton
             onClick={() => {
-              if (!isPhoneNumberExists()) {
+              if (!isPhoneNumberExists() && phone !== "") {
                 setPhones([...phones, { number: phone }]);
                 setPhone("");
               }
             }}
           >
-            +
-          </button>
+            <AiOutlinePlus />
+          </PlusButton>
         </div>
 
-        <ol>
+        <PhoneList>
           {phones.map((elmt, idx) => {
             return (
-              <div key={idx} style={{ display: "flex" }}>
+              <PhoneListCard key={idx} style={{ display: "flex" }}>
                 <li>{elmt.number}</li>
-                <button
+                <TrashButton
                   onClick={() => {
                     let temp = [...phones];
                     temp.splice(idx, 1);
                     setPhones(temp);
                   }}
                 >
-                  x
-                </button>
-              </div>
+                  <BsTrashFill />
+                </TrashButton>
+              </PhoneListCard>
             );
           })}
-        </ol>
+        </PhoneList>
 
-        <button onClick={editSelectedContact}>Submit</button>
+        <SubmitButton onClick={editSelectedContact}>Edit Contact</SubmitButton>
       </Form>
     </div>
   );

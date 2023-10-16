@@ -4,6 +4,10 @@ import React, { useState } from "react";
 import { ADD_CONTACT } from "../graphql/queries/create/addContact";
 import { Phone } from "../interfaces/Phone";
 import { AiOutlinePlus } from "react-icons/ai";
+import { BsTrashFill } from "react-icons/bs";
+import Swal from "sweetalert2";
+import Spinner from "../components/Spinner";
+import { useHistory } from "react-router-dom";
 
 const Heading = styled.h1`
   font-size: 24px;
@@ -41,8 +45,8 @@ const TrashButton = styled.button`
   height: 32px;
   width: 32px;
   background: white;
-  color: black;
-  border: 1px solid black;
+  color: red;
+  border: 1px solid red;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -82,8 +86,28 @@ const AddNewContact: React.FC = () => {
   const [last_name, setLastName] = useState("");
   const [phone, setPhone] = useState("");
   const [phones, setPhones] = useState<Phone[]>([]);
+  const history = useHistory();
 
-  const [addContact, { loading, error }] = useMutation(ADD_CONTACT);
+  const [addContact, { loading, error }] = useMutation(ADD_CONTACT, {
+    onError: (error) => {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Adding contact failed!",
+        footer: "",
+      });
+      history.replace("/");
+    },
+    onCompleted: (status) => {
+      Swal.fire({
+        icon: "success",
+        title: "Yay!",
+        text: "A new contact has been added!",
+        footer: "",
+      });
+      history.replace("/");
+    },
+  });
 
   const addToContact = () => {
     addContact({
@@ -95,11 +119,7 @@ const AddNewContact: React.FC = () => {
     });
   };
 
-  if (loading) return <h1>Loading...</h1>;
-  if (error) {
-    console.log(error);
-    return <h1>Error loading contacts</h1>;
-  }
+  if (loading) return <Spinner text="Adding Contact...." />;
 
   const isPhoneNumberExists = () => {
     return phones.some((el) => el.number === phone);
@@ -171,7 +191,7 @@ const AddNewContact: React.FC = () => {
                     setPhones(temp);
                   }}
                 >
-                  x
+                  <BsTrashFill />
                 </TrashButton>
               </PhoneListCard>
             );

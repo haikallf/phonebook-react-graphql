@@ -54,8 +54,8 @@ const PaginationController = styled.div`
 `;
 
 const PaginationButton = styled.button`
-  height: 24px;
-  width: 24px;
+  height: 32px;
+  width: 32px;
   background: white;
   color: black;
   border: 1px solid black;
@@ -69,25 +69,20 @@ function Home() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchValue, setSearchValue] = useState("");
   const [search, setSearch] = useState("");
-  const debounced = useDebouncedCallback(
-    // function
-    (value) => {
-      setSearchValue(() => {
-        getContactList({
-          variables: {
-            where: {
-              first_name: {
-                _like: `%${value}%`,
-              },
+  const debounced = useDebouncedCallback((value) => {
+    setSearchValue(() => {
+      getContactList({
+        variables: {
+          where: {
+            first_name: {
+              _like: `%${value}%`,
             },
           },
-        });
-        return value;
+        },
       });
-    },
-    // delay in ms
-    300
-  );
+      return value;
+    });
+  }, 300);
   const [ids, setIds] = useState<number[]>([]);
   const [getContactList, { loading, data, error }] = useLazyQuery(
     GET_CONTACT_LIST,
